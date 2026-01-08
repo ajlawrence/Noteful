@@ -1,0 +1,290 @@
+# =============================================================================
+# Costa del Sol Economic Monitor - Configuration
+# =============================================================================
+# This file defines all data sources, their schedules, and processing rules.
+# Modify this file to add new data sources or change update frequencies.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# REGION SETTINGS
+# -----------------------------------------------------------------------------
+region:
+  name: "Costa del Sol"
+  province: "Málaga"
+  province_code: "ES617"           # NUTS3 code for Málaga
+  autonomous_community: "Andalucía"
+  ac_code: "ES61"                  # NUTS2 code for Andalucía
+  country: "Spain"
+  country_code: "ES"
+
+# -----------------------------------------------------------------------------
+# DATA SOURCES
+# -----------------------------------------------------------------------------
+# Each source has:
+#   - name: Human-readable name
+#   - type: API type (dataestur, eurostat, ine, rss, manual)
+#   - schedule: How often to fetch (daily, weekly, monthly, quarterly, annual)
+#   - enabled: Whether to include in pipeline runs
+#   - endpoints: Specific API endpoints or URLs
+# -----------------------------------------------------------------------------
+
+sources:
+  # ---------------------------------------------------------------------------
+  # TOURISM DATA (Priority - most frequently updated)
+  # ---------------------------------------------------------------------------
+
+  tourism_arrivals:
+    name: "Tourist Arrivals (Frontur)"
+    type: "dataestur"
+    category: "tourism"
+    schedule: "monthly"
+    enabled: true
+    description: "International tourist arrivals to Andalucía/Málaga"
+    endpoints:
+      base_url: "https://www.dataestur.es/apidata"
+      dataset: "frontur"
+    indicators:
+      - "total_arrivals"
+      - "arrivals_by_country"
+      - "arrivals_by_purpose"
+
+  tourism_nights:
+    name: "Overnight Stays (Egatur)"
+    type: "dataestur"
+    category: "tourism"
+    schedule: "monthly"
+    enabled: true
+    description: "Tourist overnight stays and average duration"
+    endpoints:
+      base_url: "https://www.dataestur.es/apidata"
+      dataset: "egatur"
+    indicators:
+      - "total_nights"
+      - "average_stay_duration"
+      - "nights_by_accommodation_type"
+
+  tourism_expenditure:
+    name: "Tourist Expenditure"
+    type: "dataestur"
+    category: "tourism"
+    schedule: "monthly"
+    enabled: true
+    description: "Tourist spending patterns"
+    endpoints:
+      base_url: "https://www.dataestur.es/apidata"
+      dataset: "egatur_gasto"
+    indicators:
+      - "total_expenditure"
+      - "expenditure_per_tourist"
+      - "expenditure_per_day"
+
+  hotel_occupancy:
+    name: "Hotel Occupancy (INE)"
+    type: "ine"
+    category: "tourism"
+    schedule: "monthly"
+    enabled: true
+    description: "Hotel occupancy rates for Málaga province"
+    endpoints:
+      # INE EOH (Encuesta de Ocupación Hotelera)
+      base_url: "https://www.ine.es/jaxiT3/files/t"
+      table_id: "2074"
+    indicators:
+      - "occupancy_rate"
+      - "rooms_available"
+      - "rooms_occupied"
+
+  # ---------------------------------------------------------------------------
+  # EMPLOYMENT DATA
+  # ---------------------------------------------------------------------------
+
+  employment_regional:
+    name: "Regional Employment (Eurostat)"
+    type: "eurostat"
+    category: "employment"
+    schedule: "quarterly"
+    enabled: true
+    description: "Employment rates at NUTS2/NUTS3 level"
+    endpoints:
+      base_url: "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data"
+      dataset: "lfst_r_lfe2emprt"
+    filters:
+      geo: ["ES61", "ES617"]       # Andalucía and Málaga
+      age: "Y15-64"
+      sex: "T"                     # Total (both sexes)
+    indicators:
+      - "employment_rate"
+      - "employment_total"
+
+  unemployment_regional:
+    name: "Regional Unemployment (Eurostat)"
+    type: "eurostat"
+    category: "employment"
+    schedule: "quarterly"
+    enabled: true
+    description: "Unemployment rates at NUTS2/NUTS3 level"
+    endpoints:
+      base_url: "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data"
+      dataset: "lfst_r_lfu3rt"
+    filters:
+      geo: ["ES61", "ES617"]
+      age: "Y15-74"
+      sex: "T"
+    indicators:
+      - "unemployment_rate"
+
+  # ---------------------------------------------------------------------------
+  # GDP / ECONOMIC OUTPUT
+  # ---------------------------------------------------------------------------
+
+  gdp_regional:
+    name: "Regional GDP (Eurostat)"
+    type: "eurostat"
+    category: "gdp"
+    schedule: "annual"
+    enabled: true
+    description: "Gross Domestic Product at NUTS3 level"
+    endpoints:
+      base_url: "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data"
+      dataset: "nama_10r_3gdp"
+    filters:
+      geo: ["ES617"]               # Málaga NUTS3
+      unit: "MIO_EUR"              # Millions of euros
+    indicators:
+      - "gdp_total"
+      - "gdp_per_capita"
+      - "gdp_growth_rate"
+
+  gdp_by_sector:
+    name: "GDP by Sector (Eurostat)"
+    type: "eurostat"
+    category: "gdp"
+    schedule: "annual"
+    enabled: true
+    description: "GVA breakdown by economic sector"
+    endpoints:
+      base_url: "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data"
+      dataset: "nama_10r_3gva"
+    filters:
+      geo: ["ES617"]
+      nace_r2: ["TOTAL", "G-I", "I"]  # Total, Trade/Transport/Hospitality, Accommodation
+    indicators:
+      - "gva_total"
+      - "gva_tourism_sector"
+
+  # ---------------------------------------------------------------------------
+  # REAL ESTATE (if available)
+  # ---------------------------------------------------------------------------
+
+  housing_prices:
+    name: "Housing Price Index (INE)"
+    type: "ine"
+    category: "real_estate"
+    schedule: "quarterly"
+    enabled: true
+    description: "House price index for Andalucía"
+    endpoints:
+      base_url: "https://www.ine.es/jaxiT3/files/t"
+      table_id: "25171"
+    indicators:
+      - "price_index"
+      - "price_yoy_change"
+
+  # ---------------------------------------------------------------------------
+  # NEWS / QUALITATIVE EVENTS
+  # ---------------------------------------------------------------------------
+
+  economic_news:
+    name: "Economic News RSS"
+    type: "rss"
+    category: "events"
+    schedule: "daily"
+    enabled: true
+    description: "Economic news from Spanish sources"
+    endpoints:
+      feeds:
+        - url: "https://www.expansion.com/rss/andalucia.xml"
+          name: "Expansion Andalucía"
+        - url: "https://www.diariosur.es/rss/2.0/?section=economia"
+          name: "Diario Sur Economía"
+    max_articles: 10
+
+# -----------------------------------------------------------------------------
+# PROCESSING SETTINGS
+# -----------------------------------------------------------------------------
+processing:
+  # Data validation thresholds
+  validation:
+    max_missing_percent: 20        # Flag if >20% of values are missing
+    outlier_std_threshold: 3       # Flag values >3 standard deviations
+
+  # Trend calculations
+  trends:
+    yoy_enabled: true              # Year-over-Year percentage change
+    mom_enabled: true              # Month-over-Month percentage change
+    moving_average_window: 3       # 3-period moving average
+
+# -----------------------------------------------------------------------------
+# AI SETTINGS
+# -----------------------------------------------------------------------------
+ai:
+  # Model selection for different tasks (balanced cost strategy)
+  models:
+    # Use smaller/faster model for simple tasks
+    quality_check: "claude-3-haiku-20240307"
+    news_summary: "claude-3-haiku-20240307"
+
+    # Use larger model for complex analysis
+    anomaly_detection: "claude-sonnet-4-20250514"
+    report_generation: "claude-sonnet-4-20250514"
+    data_query: "claude-sonnet-4-20250514"
+
+  # Rate limiting (to control costs)
+  rate_limits:
+    max_requests_per_minute: 10
+    max_tokens_per_request: 4000
+
+  # Caching LLM responses
+  cache_responses: true
+  cache_expiry_hours: 168          # 1 week
+
+# -----------------------------------------------------------------------------
+# OUTPUT SETTINGS
+# -----------------------------------------------------------------------------
+outputs:
+  charts:
+    format: "png"
+    dpi: 150
+    style: "seaborn-v0_8-whitegrid"
+
+  reports:
+    format: "markdown"
+    include_charts: true
+
+  alerts:
+    # Thresholds that trigger email alerts
+    anomaly_threshold: 0.15        # 15% deviation from expected
+    enable_email: true
+
+# -----------------------------------------------------------------------------
+# SCHEDULING
+# -----------------------------------------------------------------------------
+# Defines when each schedule type runs
+schedule:
+  daily:
+    time: "08:00"
+    timezone: "Europe/Madrid"
+  weekly:
+    day: "monday"
+    time: "09:00"
+  monthly:
+    day: 5                         # 5th of each month
+    time: "09:00"
+  quarterly:
+    months: [1, 4, 7, 10]          # January, April, July, October
+    day: 15
+    time: "09:00"
+  annual:
+    month: 3                       # March (when annual data is released)
+    day: 1
+    time: "09:00"

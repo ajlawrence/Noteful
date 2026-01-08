@@ -1,0 +1,53 @@
+# Costa del Sol Economic Monitor - Git Ignore
+
+# Environment variables (contains secrets!)
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+.eggs/
+*.manifest
+*.spec
+
+# Virtual environment
+venv/
+ENV/
+env/
+.venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Data files (generated, can be large)
+data/costa_econ.db
+data/*.db
+data/cache/
+data/charts/*.png
+data/*.log
+data/*.md
+
+# Keep the data directories
+!data/.gitkeep
+!data/cache/.gitkeep
+!data/charts/.gitkeep
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# OS files
+.DS_Store
+Thumbs.db

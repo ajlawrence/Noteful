@@ -1,0 +1,50 @@
+# Costa del Sol Economic Monitor - Dependencies
+# Install with: pip install -r requirements.txt
+
+# =============================================================================
+# CORE DATA PROCESSING
+# =============================================================================
+pandas>=2.0.0              # Data manipulation and analysis
+numpy>=1.24.0              # Numerical operations
+requests>=2.31.0           # HTTP requests to APIs
+
+# =============================================================================
+# DATABASE
+# =============================================================================
+# SQLite is built into Python - no extra package needed!
+# We use sqlalchemy for easier database operations
+sqlalchemy>=2.0.0          # Database ORM and connection management
+
+# =============================================================================
+# AI / LLM INTEGRATION
+# =============================================================================
+anthropic>=0.18.0          # Anthropic Claude API client
+
+# =============================================================================
+# VISUALIZATION
+# =============================================================================
+matplotlib>=3.7.0          # Chart generation
+seaborn>=0.12.0            # Statistical visualizations (prettier charts)
+
+# =============================================================================
+# EMAIL ALERTS
+# =============================================================================
+# Uses built-in smtplib - no extra package needed!
+
+# =============================================================================
+# UTILITIES
+# =============================================================================
+python-dotenv>=1.0.0       # Load environment variables from .env file
+pyyaml>=6.0                # Parse YAML configuration files
+feedparser>=6.0.0          # Parse RSS/Atom news feeds
+schedule>=1.2.0            # Job scheduling for automated runs
+tenacity>=8.2.0            # Retry logic for API calls
+tqdm>=4.65.0               # Progress bars for long operations
+
+# =============================================================================
+# DEVELOPMENT (optional but recommended)
+# =============================================================================
+# Uncomment these if you want development tools:
+# pytest>=7.0.0            # Testing framework
+# black>=23.0.0            # Code formatter
+# flake8>=6.0.0            # Code linter
