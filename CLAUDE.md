@@ -41,5 +41,5 @@ Classic Rails MVC, no API layer, no background jobs.
 ## Gotchas
 
 - `app/models/notes2.rb` is a leftover duplicate that re-opens the `Note` class (no `#preview`). Prefer editing `app/models/note.rb`; be aware both files define `Note`.
-- Ownership scoping is inconsistent in `NotesController`: `index`, `create`, and `show` scope through `current_user.notes`, but `edit`, `update`, and `destroy` use unscoped `Note.find`, so any signed-in user can modify/delete another user's note by ID. Keep this in mind (and prefer `current_user.notes.find`) when touching these actions.
+- All `NotesController` actions must scope through `current_user.notes` (e.g. `current_user.notes.find(params[:id])`), never unscoped `Note.find` — notes are per-user and unscoped lookups let one user access another's notes.
 - The Rails and gem versions are old betas; generators and newer-Rails idioms (e.g. `belongs_to` required-by-default, `form_with`) do not apply here.
