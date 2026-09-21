@@ -40,6 +40,5 @@ Classic Rails MVC, no API layer, no background jobs.
 
 ## Gotchas
 
-- `app/models/notes2.rb` is a leftover duplicate that re-opens the `Note` class (no `#preview`). Prefer editing `app/models/note.rb`; be aware both files define `Note`.
 - All `NotesController` actions must scope through `current_user.notes` (e.g. `current_user.notes.find(params[:id])`), never unscoped `Note.find` — notes are per-user and unscoped lookups let one user access another's notes.
 - The Rails and gem versions are old betas; generators and newer-Rails idioms (e.g. `belongs_to` required-by-default, `form_with`) do not apply here.
