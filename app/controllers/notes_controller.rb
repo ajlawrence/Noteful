@@ -23,11 +23,11 @@ class NotesController < ApplicationController
   end
 
   def edit
-    @note = Note.find(params[:id])
+    @note = current_user.notes.find(params[:id])
   end
 
   def update
-    @note = Note.find(params[:id])
+    @note = current_user.notes.find(params[:id])
 
     if @note.update(note_params)
       flash.notice = "Your note'#{@note.title}' has just been updated!"
@@ -38,7 +38,7 @@ class NotesController < ApplicationController
   end
 
   def destroy
-    @note = Note.find(params[:id])
+    @note = current_user.notes.find(params[:id])
     @note.destroy
 
     flash.notice = "Your note has just been trashed!"
